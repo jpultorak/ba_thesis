@@ -4,6 +4,11 @@ class TicTacToe:
     # second player: -1
 
     val_to_symbol = {1: "X", -1: "O", 0: " "}
+    winning_combinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+    ]
 
     def __init__(self) -> None:
         self.board = [0 for _ in range(9)]
@@ -37,12 +42,7 @@ class TicTacToe:
     # [3, 4, 5]
     # [6, 7, 8]
     def check_winner(self) -> int | None:
-        winning_combinations = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8],
-            [0, 3, 6], [1, 4, 7], [2, 5, 8],
-            [0, 4, 8], [2, 4, 6]
-        ]
-        for combo in winning_combinations:
+        for combo in TicTacToe.winning_combinations:
             combo_sum = sum(self.board[x] for x in combo)
             if combo_sum == 3:
                 return 1

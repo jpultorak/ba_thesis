@@ -1,7 +1,7 @@
 from random import random
 
-from game import TicTacToe
-from agents.random_agent import RandomAgent
+from src.agents.random_agent import RandomAgent
+from src.game import TicTacToe
 import random
 
 def main():
