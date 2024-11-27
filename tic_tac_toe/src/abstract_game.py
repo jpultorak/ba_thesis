@@ -33,6 +33,7 @@ class AbstractGame(ABC):
         """Return True if the game is finished."""
         pass
 
+
     @abstractmethod
     def evaluate(self) -> int | None:
         """Evaluate the game state.
