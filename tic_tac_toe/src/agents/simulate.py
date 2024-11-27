@@ -1,6 +1,6 @@
 from src.agents.base_agent import BaseAgent
 from src.agents.random_agent import RandomAgent
-from src.game import TicTacToe
+from src.tic_tac_toe import TicTacToe
 
 
 # simulate n games
@@ -16,16 +16,14 @@ def simulate(agent_1: BaseAgent, agent_2: BaseAgent, n):
 
         agent_1_move = agent_1_starts
 
-        while not game.finished():
+        while not game.is_terminal():
             if agent_1_move:
                 move = agent_1.get_move(game)
             else:
                 move = agent_2.get_move(game)
-
-            assert game.is_valid_move(move)
             game.make_move(move)
 
-            winner = game.check_winner()
+            winner = game.evaluate()
             if winner is not None:
                 if winner == 1:
                     win_1 += 1
@@ -42,4 +40,4 @@ def simulate(agent_1: BaseAgent, agent_2: BaseAgent, n):
 
 
 if __name__ == '__main__':
-    print(simulate(RandomAgent(1), RandomAgent(-1), 1))
+    print(simulate(RandomAgent(1), RandomAgent(-1), 10000))

@@ -1,7 +1,7 @@
 from random import random
 
 from src.agents.random_agent import RandomAgent
-from src.game import TicTacToe
+from src.tic_tac_toe import TicTacToe
 import random
 
 def main():
@@ -23,11 +23,10 @@ def main():
             print("Agent is making a move...")
             move = agent.get_move(game)
 
-        assert game.is_valid_move(move)
         game.make_move(move)
         game.display_board()
 
-        winner = game.check_winner()
+        winner = game.evaluate()
         if winner is not None:
             if winner == player_symbol:
                 print("Player wins!")

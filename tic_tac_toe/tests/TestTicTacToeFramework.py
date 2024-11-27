@@ -1,6 +1,7 @@
 import unittest
 
-from src.game import TicTacToe
+from src.abstract_game import InvalidMove
+from src.tic_tac_toe import TicTacToe
 
 
 class MyTestCase(unittest.TestCase):
@@ -10,9 +11,9 @@ class MyTestCase(unittest.TestCase):
     def test_initial_board_is_empty(self):
         for x in self.game.board:
             self.assertEqual(x, 0)
-            self.assertFalse(self.game.finished())
+            self.assertFalse(self.game.is_terminal())
             self.assertFalse(self.game.is_draw())
-            self.assertIsNone(self.game.check_winner())
+            self.assertIsNone(self.game.evaluate())
 
     def test_switch_player(self):
         self.assertEqual(self.game.current_player, 1)
@@ -23,7 +24,7 @@ class MyTestCase(unittest.TestCase):
         for position in range(0, 9):
             with self.subTest(position):
                 self.setUp()
-                self.assertTrue(self.game.make_move(position))
+                self.game.make_move(position)
                 self.assertEqual(self.game.board[position], 1)
                 self.assertTrue(self.game.current_player == -1)
 
@@ -31,9 +32,9 @@ class MyTestCase(unittest.TestCase):
         for position in range(0, 9):
             with self.subTest(position):
                 self.setUp()
-                self.assertTrue(self.game.make_move(position))
-                self.assertFalse(self.game.make_move(position))
-                self.assertTrue(self.game.current_player == -1) # previous move was invalid -  player should not change
+                self.game.make_move(position)
+                self.assertRaises(InvalidMove, self.game.make_move, position)
+                self.assertTrue(self.game.current_player == -1) # previous move was invalid -  state should not change
 
     def test_winning_combinations(self):
         for combination in TicTacToe.winning_combinations:
@@ -42,8 +43,8 @@ class MyTestCase(unittest.TestCase):
                 for pos in combination:
                     self.game.board[pos] = 1
 
-                self.assertTrue(self.game.check_winner() == 1)
-                self.assertTrue(self.game.finished() == 1)
+                self.assertTrue(self.game.evaluate() == 1)
+                self.assertTrue(self.game.is_terminal())
                 self.assertFalse(self.game.is_draw())
 
     def test_draw(self):
