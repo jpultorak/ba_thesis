@@ -16,7 +16,7 @@
 
 - #### `src/mcts/`
   - **`abstract_game.py`**: Abstract class defining the game interface for MCTS.
-  - **`mcts_node.py`**: Implementation of MCTS nodes, including selection, expansion, and backpropagation.
+  - **`mcts_node.py`**: Implementation of generic MCTS
   - **`tic_tac_toe.py`**: A sample implementation of the abstract game for Tic Tac Toe.
   
 - #### `tests/` unit tests
