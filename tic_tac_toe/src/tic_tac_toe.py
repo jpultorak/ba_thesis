@@ -48,7 +48,7 @@ class TicTacToe(AbstractGame):
         self.current_player *= -1
 
     def get_legal_moves(self) -> List[int]:
-        return [x for x in self.board if x != 0]
+        return [x for x in range(0, 9) if self.board[x] == 0]
 
     def evaluate(self) -> int | None:
         for combo in TicTacToe.winning_combinations:

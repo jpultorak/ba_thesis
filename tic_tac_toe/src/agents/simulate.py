@@ -1,4 +1,7 @@
+from math import gamma
+
 from src.agents.base_agent import BaseAgent
+from src.agents.mcts_agent import MCTSAgent
 from src.agents.random_agent import RandomAgent
 from src.tic_tac_toe import TicTacToe
 
@@ -36,8 +39,27 @@ def simulate(agent_1: BaseAgent, agent_2: BaseAgent, n):
 
             agent_1_move = not agent_1_move
 
-    return f"Out of {n} total games:\n" + f"Agent1 - {agent_1} won {win_1} ({100*win_1/n}%)\n"+ f"Agent2 - {agent_2} won {win_2} ({100*win_2/n}%)\n" + f"{draws} ({100*draws/n}%) draws"
+    summary = f"Out of {n} total games:\n" + f"Agent1 - {agent_1} won {win_1} ({100*win_1/n}%)\n"+ f"Agent2 - {agent_2} won {win_2} ({100*win_2/n}%)\n" + f"{draws} ({100*draws/n}%) draws"
+    return {
+        "p1_wins" : win_1,
+        "p2_wins" : win_2,
+        "draws" : draws,
+        "summary": summary
+    }
 
+def mcts_vs_random(mcts_rollouts):
+    res = simulate(RandomAgent(1), MCTSAgent(-1, rollouts_per_turn=mcts_rollouts), n=1000)
+    print(res["summary"])
+
+def random_vs_random():
+    res = simulate(RandomAgent(1), RandomAgent(1), n=1000)
+    print(res["summary"])
+
+def mcts_vs_mcts(mcts_rollouts : tuple[int, int], games=100):
+    res = simulate(MCTSAgent(1, rollouts_per_turn=mcts_rollouts[0]), MCTSAgent(-1, rollouts_per_turn=mcts_rollouts[1]), n=games)
+    print(res["summary"])
 
 if __name__ == '__main__':
-    print(simulate(RandomAgent(1), RandomAgent(-1), 10000))
+    # mcts_vs_random(mcts_rollouts=100)
+    # mcts_vs_random(mcts_rollouts=1000)
+    mcts_vs_mcts((50, 1000), games=1000)

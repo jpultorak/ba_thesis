@@ -1,6 +1,6 @@
 from random import random
 
-from src.agents.random_agent import RandomAgent
+from src.agents.mcts_agent import MCTSAgent
 from src.tic_tac_toe import TicTacToe
 import random
 
@@ -8,7 +8,7 @@ def main():
     game = TicTacToe()
     player_symbol = random.choice([1, -1])
     agent_symbol = (-1)*player_symbol
-    agent = RandomAgent(agent_symbol)
+    agent = MCTSAgent(agent_symbol, rollouts_per_turn=50)
 
     print("Time to play some Tic Tac Toe bruv")
     game.display_board()

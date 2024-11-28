@@ -1,39 +1,82 @@
-from abc import abstractmethod
+import math
+
+from copy import deepcopy
+from random import choice
+from abc import ABC
+
+from src.abstract_game import AbstractGame
 
 
-class MCTSNode:
+class MctsNode(ABC):
+    def __init__(self, game: AbstractGame, parent=None):
+        self.game = game
+        self.parent = parent
+        self.children : dict[int, MctsNode]= {}
+        self.visits = 0
+        self.value = 0
 
 
-    def __init__(self, state):
-        self.state = state
-        self.parent = None
-        self.result = 0
-        self.total = 0
+    @staticmethod
+    def selection_policy(node, parent_visits, exploration_weight: float):
+        return node.value / node.visits + exploration_weight * math.sqrt(math.log(parent_visits) / node.visits)
 
-    def is_expanded(self):
-        return self.total == 0
+    def best_child(self) -> "MctsNode":
+        """Select the best child node using UCB."""
+        # unvisited nodes have priority
+        unvisited = [child for child in self.children.values() if child.visits == 0]
+        if unvisited:
+            return choice(unvisited)
 
-    @abstractmethod
-    def is_terminal(self):
-        pass
-
-    @abstractmethod
-    def generate_children(self):
-        pass
-
-    @abstractmethod
-    def deepcopy(self):
-        pass
-
-    def best_child(self, exploration_weight=1.41):
         return max(
-            self.children,
-            key=lambda child: child.value / child.visits +
-                              exploration_weight * math.sqrt(math.log(self.visits) / child.visits)
+            self.children.values(),
+            key=lambda child: MctsNode.selection_policy(child, self.visits, 1.41)
         )
 
-    def select_leaf(self, f):
-        cur_state : MCTSNode = self.deepcopy() # todo, figure out a better way to copy
+    def select(self):
+        """Find first node which is a leaf node"""
+        node = self
+        while node.children:
+            node = node.best_child()
 
-        while not cur_state.is_terminal() or cur_state.is_expanded():
-            nxt
+        if node.visits != 0 and not node.game.is_terminal():
+            node.expand()
+            return node.best_child()
+        else:
+            return node
+
+    def expand(self) -> None:
+        """Expand the node by adding ALL of its children"""
+        for move in self.game.get_legal_moves():
+            new_game = deepcopy(self.game)
+            new_game.make_move(move)
+            self.children[move] = MctsNode(new_game, parent=self)
+
+    def simulate(self) -> int:
+        """Simulate a random play-out from the current node."""
+        simulation_game = deepcopy(self.game)
+        while not simulation_game.is_terminal():
+            legal_moves = simulation_game.get_legal_moves()
+            move = choice(legal_moves)
+            simulation_game.make_move(move)
+        return simulation_game.evaluate()
+
+    def backpropagate(self, result: int) -> None:
+        """Update the node's value and visits based on the simulation result."""
+        self.visits += 1
+
+        if result == (-1)*self.game.current_player:
+            self.value += 1
+        elif result == 0:
+            self.value += 0.5
+        if self.parent:
+            self.parent.backpropagate(result)
+
+    def rollout(self, n: int) -> None:
+        """Perform n rollouts"""
+        for _ in range(n):
+            sim_node = self.select()
+            result = sim_node.simulate()
+            sim_node.backpropagate(result)
+
+
+
